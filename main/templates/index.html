@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редактор презентаций</title>
-    <!-- Подключение Bootstrap CSS -->
-    <link href="
-    https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.min.css
-    " rel="stylesheet">
+    
+    <!-- Подключение стилей -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/panzoom/panzoom.css" />
 
+    <!-- Пользовательские стили -->
     <style>
+        /* Стили для панелей */
         .panel-left {
             position: absolute;
             top: 2%;
@@ -70,9 +72,9 @@
             flex-direction: row;
             justify-content: space-between;
             padding: 10px;
-            /* Добавлен внутренний отступ */
         }
 
+        /* Стили для слайдов */
         .main-slide {
             width: 100%;
             padding-top: 56.25%;
@@ -130,6 +132,7 @@
             background-color: #C0C0C0;
         }
 
+        /* Другие стили */
         .template-selection {
             display: flex;
             flex-direction: column;
@@ -197,24 +200,9 @@
         .editable-container {
             position: relative;
         }
-
-        .capitalize-button {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 1px solid currentColor;
-            background-color: #0077ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            color: white;
-        }
     </style>
 
+    <!-- Стили для нижней панели -->
     <style>
         .dock-item {
             text-align: center;
@@ -236,28 +224,30 @@
             transform: scale(1.1) translateY(-5px);
         }
     </style>
+
+    <!-- Подключение скриптов -->
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/panzoom/panzoom.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://malsup.github.io/jquery.blockUI.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/panzoom/panzoom.css" />
-
 </head>
 
 <body>
+    <!-- Левая панель -->
     <div class="panel-left">
+        <!-- Кнопка для открытия Google Презентаций -->
         <div class="row">
             <div class="col-12">
                 <button class="btn mb-2" onclick="openGooglePresentation()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24" height="24">
-                        <path
-                            d="M8 4C8 5.10457 7.10457 6 6 6 4.89543 6 4 5.10457 4 4 4 2.89543 4.89543 2 6 2 7.10457 2 8 2.89543 8 4ZM5 16V22H3V10C3 8.34315 4.34315 7 6 7 6.82059 7 7.56423 7.32946 8.10585 7.86333L10.4803 10.1057 12.7931 7.79289 14.2073 9.20711 10.5201 12.8943 9 11.4587V22H7V16H5ZM6 9C5.44772 9 5 9.44772 5 10V14H7V10C7 9.44772 6.55228 9 6 9ZM19 5H10V3H20C20.5523 3 21 3.44772 21 4V15C21 15.5523 20.5523 16 20 16H16.5758L19.3993 22H17.1889L14.3654 16H10V14H19V5Z">
-                        </path>
+                        <path d="M8 4C8 5.10457 7.10457 6 6 6 4.89543 6 4 5.10457 4 4 4 2.89543 4.89543 2 6 2 7.10457 2 8 2.89543 8 4ZM5 16V22H3V10C3 8.34315 4.34315 7 6 7 6.82059 7 7.56423 7.32946 8.10585 7.86333L10.4803 10.1057 12.7931 7.79289 14.2073 9.20711 10.5201 12.8943 9 11.4587V22H7V16H5ZM6 9C5.44772 9 5 9.44772 5 10V14H7V10C7 9.44772 6.55228 9 6 9ZM19 5H10V3H20C20.5523 3 21 3.44772 21 4V15C21 15.5523 20.5523 16 20 16H16.5758L19.3993 22H17.1889L14.3654 16H10V14H19V5Z"></path>
                     </svg>
                 </button>
             </div>
         </div>
+        
+        <!-- Заголовок и разделитель -->
         <div class="row">
             <div class="col-12">
                 <p class="ms-2">Презентация</p>
@@ -265,51 +255,51 @@
             <hr class="w-100">
         </div>
 
+        <!-- Кнопки управления слайдами -->
         <div class="row">
             <div class="col-12 text-center">
-                <button class="btn btn-outline-primary mb-2 w-70 py-1 mx-auto"
-                    onclick="openTemplateSelection()">Добавить слайд</button>
+                <button class="btn btn-outline-primary mb-2 w-70 py-1 mx-auto" onclick="openTemplateSelection()">Добавить слайд</button>
                 <button class="btn btn-outline-danger mb-2 w-30 py-1 mx-auto" onclick="deleteSelectedSlide()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-trash" viewBox="0 0 16 16">
-                        <path
-                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />
-                        <path
-                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z" />
                     </svg>
                 </button>
             </div>
             <hr class="w-100">
         </div>
+
+        <!-- Контейнер для превью слайдов -->
         <div class="row">
             <div id="slides-selection-container">
-
             </div>
         </div>
     </div>
 
+    <!-- Правая панель -->
     <div class="panel-right">
-        <button class="btn btn-success mb-2 w-100" onclick='addSlidesFromJSON([
-        {
-            "template": "titleSlide",
-            "content": {
-                "1": "Заголовок",
-            }
-        },
-        {
-            "template": "fourPoints",
-            "content": {
-                "1": "Пункт 1",
-                "2": "Пункт 2",
-                "3": "Пункт 3",
-                "4": "Пункт 4",
-            }
-        },
-        
-    ])'>Добавить слайд из JSON</button>
+        <!-- Панель комментариев -->
+        <div id="comment-panel" class="mt-3" style="width: 90%; display: block; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; text-align: center;">
+            <h5>Комментарии</h5>
+            <button id="toggle-comments" onclick="toggleComments()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <hr class="w-100">
 
-        <button type="button" onclick="savePresentation()">Сохранить</button>
+            <div id="comments-content">
+                <div id="comments-container" class="mb-3">
+                </div>
+                <button class="btn btn-outline-primary mt-2" onclick="openCommentEditor()">Добавить комментарий</button>
+                <div id="comment-editor" style="display: none;" class="mt-3">
+                    <textarea id="comment-text" placeholder="Введите комментарий" class="form-control mb-2" rows="3"></textarea>
+                    <button class="btn btn-outline-success mt-2" onclick="addComment()">Отправить</button>
+                </div>
+            </div>
+        </div>
 
+        <!-- Редактор изображений -->
         <div id="image-editor" class="mt-3"
             style="width: 90%; display: none; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; text-align: center;">
             <button onclick="document.getElementById('image-editor').style.display='none'"
@@ -323,16 +313,19 @@
             <h5>Изображение</h5>
             <hr class="w-100">
 
+            <!-- Загрузка изображения с устройства -->
             <input type="file" id="image-upload" accept="image/*" class="form-control mb-2">
             <button class="btn btn-outline-success mt-2" onclick="saveImage()">С устойства</button>
 
             <hr class="w-100">
 
+            <!-- Добавление изображения по URL -->
             <input type="text" id="image-url" placeholder="Введите URL изображения" class="form-control mb-2">
             <button class="btn btn-outline-info mt-2" onclick="addImageByUrl()">Добавить по URL</button>
 
             <hr class="w-100">
 
+            <!-- Генерация изображения по промпту -->
             <input type="text" id="image-prompt" placeholder="Введите промпт для генерации" class="form-control mb-2">
             <select id="image-scale" class="form-select mb-2">
                 <option value="1">1:1</option>
@@ -342,6 +335,7 @@
             <button class="btn btn-outline-primary mt-2" onclick="generateImage()">Сгенерировать</button>
         </div>
 
+        <!-- Редактор текста -->
         <div id="text-editor" class="mt-3"
             style="width: 90%; display: none; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; text-align: center;">
             <button onclick="document.getElementById('text-editor').style.display='none'"
@@ -361,6 +355,7 @@
         </div>
     </div>
 
+    <!-- Панель выбора шаблона -->
     <div id="template-panel" class="panel-template">
         <button class="btn mb-2 mt-1 ms-1" onclick="document.getElementById('template-panel').style.display='none'"
             style="width: 30px; height: 30px; padding: 0;">
@@ -384,8 +379,9 @@
             {% endfor %}
         </div>
     </div>
-    <div class="panel-down">
 
+    <!-- Нижняя панель -->
+    <div class="panel-down">
         <div class="dock-item">
             <button class="dock-button">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -394,7 +390,6 @@
                     </path>
                 </svg>
             </button>
-
         </div>
         <div class="dock-item">
             <button class="dock-button" type="button" onclick="">
@@ -404,31 +399,30 @@
                     </path>
                 </svg>
             </button>
-
         </div>
-        <!-- Add more items as needed -->
-
+        <!-- Добавьте дополнительные элементы по мере необходимости -->
     </div>
 
+    <!-- Основной контейнер для отображения слайдов -->
     <div id="myPanzoom" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
         <div class="dots-background"
             style="display: flex; justify-content: center; align-items: center; height: 100vh;">
             <div id="main-slide" class="main-slide-container">
                 <div class="main-slide-content-container" id="main-slide-content">
-
                 </div>
             </div>
         </div>
     </div>
+</body>
 
-
-
-
+    <!-- Скрипты -->
     <script>
+        // Инициализация переменных
         let selectedTemplate = '';
         let slideCount = 0;
         let selectedSlide = null;
 
+        // Настройка Panzoom для масштабирования и перемещения слайдов
         const container = document.getElementById("myPanzoom");
         const options = {
             minScale: 0.7,
@@ -445,6 +439,7 @@
             instance.zoomWithWheel(event);
         });
 
+        // Загрузка шаблонов слайдов
         const templates = {};
         {% for slide in slides %}
         templates['{{ slide.name }}'] = {
@@ -456,6 +451,7 @@
         };
         {% endfor %}
 
+        // Функции для работы с шаблонами и слайдами
         function openTemplateSelection() {
             document.getElementById('template-panel').style.display = 'block';
         }
@@ -467,8 +463,8 @@
             document.getElementById('template-panel').style.display = 'none';
         }
 
-
         function addSlide() {
+            // Создание нового слайда
             slideCount++;
             const mainSlide = document.createElement('div');
             mainSlide.className = 'main-slide';
@@ -486,6 +482,7 @@
 
             mainSlide.appendChild(mainSlideContent);
 
+            // Создание превью слайда
             const previewSlide = document.createElement('div');
             previewSlide.className = 'preview-slide';
             previewSlide.setAttribute('data-slide-number', slideCount);
@@ -502,9 +499,7 @@
             document.getElementById('slides-selection-container').appendChild(previewSlide);
             document.getElementById('main-slide-content').appendChild(mainSlide);
             
-            savePresentation();
             selectSlide(previewSlide);
-            
         }
 
         function deleteSelectedSlide() {
@@ -546,24 +541,23 @@
             document.getElementById('main-slide').style.display = 'block';
         }
 
-
-
+        // Загрузка слайдов при загрузке страницы
         window.onload = function () {
             {% for slide in instance %}
             addSlidesFromJSON({
                 template: "{{ slide.template }}",
                 content: {
                     {% for key, value in slide.content.items %}
-        "{{ key }}": "{{ value }}",
-            {% endfor %}
+                    "{{ key }}": "{{ value }}",
+                    {% endfor %}
                 }
             });
-        {% endfor %}
+            {% endfor %}
         };
 
         function addSlidesFromJSON(jsonData) {
             const slides = Array.isArray(jsonData) ? jsonData : [jsonData];
-
+            console.log(slides);
             slides.forEach(slide => {
                 const template = templates[slide.template];
                 if (!template) {
@@ -590,21 +584,24 @@
                 addSlide();
             });
         }
-
     </script>
 
+    <!-- Скрипты для работы с текстовым редактором -->
     <script>
+        // Открытие текстового редактора
         function openTextEditor(text) {
             currentTextElement = text;
             document.getElementById('text-editor').style.display = 'block';
         }
 
-       function reGenerateTextByPrompt() {
+        // Регенерация текста с помощью ИИ
+        function reGenerateTextByPrompt() {
             const textPrompt = document.getElementById('text-prompt').value;
             const formData = new FormData();
             formData.append('text_prompt', textPrompt);
             formData.append('text', currentTextElement.textContent);
             
+            // Показываем индикатор загрузки
             $.blockUI({
                 message: '<div class="spinner-border text-white" role="status"><span class="visually-hidden">Загрузка...</span></div>',
                 css: {
@@ -613,6 +610,7 @@
                 }
             });
 
+            // Отправляем запрос на сервер
             fetch('{% url 're_generate_text' %}', {
                 method: 'POST',
                 body: formData,
@@ -635,24 +633,22 @@
         }
     </script>
 
+    <!-- Скрипты для работы с изображениями -->
     <script> 
-
-        function openTextEditor(text) {
-            currentTextElement = text;
-            document.getElementById('text-editor').style.display = 'block';
-        }
-
+        // Открытие редактора изображений
         function openImageEditor(img) {
             currentImageElement = img;
             document.getElementById('image-editor').style.display = 'block';
         }
 
-
+        // Генерация изображения с помощью ИИ
         function generateImage() {
             const imagePrompt = document.getElementById('image-prompt').value;
             const formData = new FormData();
             formData.append('image_prompt', imagePrompt);
             formData.append('image_scale', document.getElementById('image-scale').value);
+            
+            // Показываем индикатор загрузки
             $.blockUI({
                 message: '<div class="spinner-border text-white" role="status"><span class="visually-hidden">Загрузка...</span></div>',
                 css: {
@@ -662,6 +658,7 @@
                 }
             });
 
+            // Отправляем запрос на сервер
             fetch('{% url 'generate_image' %}', {
                 method: 'POST',
                 body: formData,
@@ -669,27 +666,28 @@
                     'X-CSRFToken': '{{ csrf_token }}'
                 }
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        if (currentImageElement) {
-                            currentImageElement.src = data.url;
-                        }
-                        savePresentation();
-                    } else {
-                        alert('Ошибка при генерации изображения.');
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (currentImageElement) {
+                        currentImageElement.src = data.url;
                     }
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    alert('Ошибка при генерации изображения.');
-                }).finally(function () {
-                    $.unblockUI();
                     savePresentation();
-                });
-
+                } else {
+                    alert('Ошибка при генерации изображения.');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка при генерации изображения.');
+            })
+            .finally(() => {
+                $.unblockUI();
+                savePresentation();
+            });
         }
 
+        // Сохранение загруженного изображения
         function saveImage() {
             const fileInput = document.getElementById('image-upload');
             const file = fileInput.files[0];
@@ -701,28 +699,28 @@
                     method: 'POST',
                     body: formData
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            if (currentImageElement) {
-                                currentImageElement.src = data.url;
-                            }
-                            savePresentation();
-                        } else {
-                            alert('Ошибка при загрузке изображения.');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        if (currentImageElement) {
+                            currentImageElement.src = data.url;
                         }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка:', error);
-                        alert('Ошибка при загрузке изображения.');
-                    }).finally(function () {
-                        
                         savePresentation();
-                    });
+                    } else {
+                        alert('Ошибка при загрузке изображения.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при загрузке изображения.');
+                })
+                .finally(() => {
+                    savePresentation();
+                });
             }
-
         }
 
+        // Добавление изображения по URL
         function addImageByUrl() {
             const urlInput = document.getElementById('image-url');
             const url = urlInput.value;
@@ -733,33 +731,170 @@
             }
             savePresentation();
         }
-
-
     </script>
 
-    <!-- save presentation -->
+    <!-- Скрипты для работы с комментариями -->
     <script>
-        function savePresentation() {
-            const slidesJson = slidesToJson();
-            const presentationId = {{ presentation.id }}
+        let comments = {{ comments|safe }};
 
-        const csrfToken = '{{ csrf_token }}';
+        // Открытие редактора комментариев
+        function openCommentEditor() {
+            document.getElementById('comment-editor').style.display = 'block';
+        }
 
-        const form = new FormData();
-        form.append('slides', slidesJson);
+        // Переключение видимости комментариев
+        function toggleComments() {
+            var content = document.getElementById('comments-content');
+            var button = document.getElementById('toggle-comments');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+            } else {
+                content.style.display = 'none';
+                button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
+            }
+        }
 
-        fetch(`/save/${presentationId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            body: form
-        })
+        // Добавление нового комментария
+        function addComment() {
+            const commentText = document.getElementById('comment-text').value;
+            if (commentText.trim() !== '') {
+                const formData = new FormData();
+                formData.append('comment', commentText);
+
+                fetch(`/add_comment/{{ presentation.id }}/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        comments.push(data.comment);
+                        displayComments();
+                        document.getElementById('comment-text').value = '';
+                        document.getElementById('comment-editor').style.display = 'none';
+                    } else {
+                        alert('Ошибка при добавлении комментария.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при добавлении комментария.');
+                });
+            }
+        }
+
+        // Отображение комментариев
+        function displayComments() {
+            const commentsContainer = document.getElementById('comments-container');
+            commentsContainer.innerHTML = '';
+            comments.forEach(comment => {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'container comment-container mb-2 p-2 border rounded';
+                commentDiv.style.backgroundColor = 'white';
+                commentDiv.innerHTML = `
+                    <div class="row">
+                        <div class="col">
+                            <p>${comment.text}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-sm btn-outline-primary" onclick="fixComment(${comment.id})">Исправить с ИИ</button>
+                            <button class="btn btn-sm btn-outline-success" onclick="deleteComment(${comment.id})">Ок</button>
+                        </div>
+                    </div>
+                `;
+                commentsContainer.appendChild(commentDiv);
+            });
+        }
+
+        // Удаление комментария
+        function deleteComment(commentId) {
+            const formData = new FormData();
+            formData.append('comment_id', commentId);
+
+            fetch(`/delete_comment/{{ presentation.id }}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-
+                    comments = comments.filter(c => c.id !== commentId);
+                    displayComments();
                 } else {
+                    alert('Ошибка при удалении комментария.');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка при удалении комментария.');
+            });
+        }
+
+        // Исправление комментария с помощью ИИ
+        function fixComment(commentId) {
+            const comment = comments.find(c => c.id === commentId);
+            if (comment) {
+                const formData = new FormData();
+                formData.append('comment_text', comment.text);
+
+                fetch(`{% url 'fix_comment' presentation.id %}`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        console.log('Комментарий успешно исправлен');
+                        location.reload();
+                    } else {
+                        alert('Ошибка при исправлении комментария.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при исправлении комментария.');
+                });
+            }
+        }
+
+        // Инициализация отображения комментариев при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            displayComments();
+        });
+    </script>
+
+    <!-- Скрипт для сохранения презентации -->
+    <script>
+        function savePresentation() {
+            const slidesJson = slidesToJson();
+            const presentationId = {{ presentation.id }};
+            const csrfToken = '{{ csrf_token }}';
+
+            const form = new FormData();
+            form.append('slides', slidesJson);
+
+            fetch(`/save/${presentationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: form
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
                     alert('Ошибка при сохранении презентации.');
                 }
             })
@@ -770,12 +905,13 @@
         }
     </script>
 
+    <!-- Скрипты для работы с шаблонами и слайдами -->
     <script>
-                function templatesToJson(templates) {
+        // Преобразование шаблонов в JSON
+        function templatesToJson(templates) {
             const parser = new DOMParser();
             const result = [];
 
-            // Проходим по ключам объекта templates
             Object.keys(templates).forEach(templateName => {
                 const template = templates[templateName];
                 const doc = parser.parseFromString(template.html, 'text/html');
@@ -797,6 +933,7 @@
             return result;
         }
 
+        // Преобразование слайдов в JSON
         function slidesToJson() {
             const result = [];
             const slideContainer = document.getElementById('main-slide-content');
@@ -821,17 +958,12 @@
                 });
             });
 
-            console.log(JSON.stringify(result).replace(/"/g, '\\"').replace(/\n/g, ''));
-
             return JSON.stringify(result).replace(/"/g, '\\"').replace(/\n/g, '');
         }
 
-
+        // Вывод шаблонов в консоль (для отладки)
         const templatesJson = templatesToJson(templates);
         console.log(templatesJson);
-
-       
     </script>
-</body>
 
 </html>

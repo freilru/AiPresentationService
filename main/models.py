@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 class Theme(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название темы")
     image_title = models.ImageField(upload_to='themes/', verbose_name="Превью темы", null=True, blank=True)
+    slides_json = models.JSONField(verbose_name="Слайды", null=True, blank=True)
 
     class Meta:
         verbose_name = "Тема"
@@ -32,14 +33,8 @@ class Slide(models.Model):
 class Presentation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
     name = models.CharField(max_length=255, verbose_name="Название презентации")
-    slides = models.JSONField(verbose_name="Слайды", default='''[
-        {
-            "template": "titleSlide",
-            "content": {
-                "1": "Заголовок",
-            }
-        },
-    ]''', null=True, blank=True)
+    slides = models.JSONField(verbose_name="Слайды", null=True, blank=True)
+    comments = models.JSONField(verbose_name="Комментарии", null=True, blank=True)
 
     class Meta:
         verbose_name = "Презентация"

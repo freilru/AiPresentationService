@@ -1,16 +1,242 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Создание презентации</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f5f5f5;
+            background-image: radial-gradient(#7c7c7c 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+
+        .formbold-main-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+        }
+
+        .formbold-form-wrapper {
+            margin: 0 auto;
+            max-width: 550px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 48px 0px rgba(34, 60, 80, 0.18);
+        }
+
+        .formbold-form-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #07074D;
+            margin-bottom: 30px;
+        }
+
+        .formbold-form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #DDE3EC;
+            border-radius: 5px;
+            background: #FFFFFF;
+            font-weight: 500;
+            font-size: 16px;
+            color: #07074D;
+            outline: none;
+            resize: none;
+            margin-bottom: 24px;
+        }
+
+        .formbold-form-input:focus {
+            border-color: #6A64F1;
+        }
+
+        .formbold-form-label {
+            color: #07074D;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 24px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .formbold-btn {
+            font-size: 16px;
+            border-radius: 5px;
+            padding: 12px 25px;
+            border: none;
+            font-weight: 500;
+            background-color: #6A64F1;
+            color: white;
+            cursor: pointer;
+            margin-top: 25px;
+            width: 100%;
+        }
+
+        .formbold-btn:hover {
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .theme-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .theme-item {
+            flex: 0 0 auto;
+            width: 200px;
+            margin-right: 20px;
+            scroll-snap-align: start;
+            cursor: pointer;
+        }
+
+        .theme-image {
+            width: 100%;
+            height: auto;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .theme-image.selected {
+            border-color: blue;
+        }
+
+        .file-upload-wrapper {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: #6A64F1;
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .file-upload-text {
+            color: #666;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .file-selected {
+            border-color: #4CAF50;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Создание презентации</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Создать</button>
-    </form>
+    <div class="formbold-main-wrapper">
+        <div class="formbold-form-wrapper">
+            <h1 class="formbold-form-title">Создание презентации</h1>
+            <form method="post" enctype="multipart/form-data" id="presentation-form">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="formbold-form-group">
+                    <label for="{{ field.id_for_label }}" class="formbold-form-label">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+                {% endfor %}
+
+                <div class="formbold-form-group mt-3">
+                    <label class="formbold-form-label">Выберите тему презентации:</label>
+                    <div class="theme-carousel">
+                        {% for theme in themes %}
+                        <div class="theme-item">
+                            <img src="{{ theme.image_title.url }}" alt="{{ theme.name }}" class="theme-image"
+                                onclick="selectTheme({{ theme.id }})">
+                            <p style="text-align: center; font-size: 12px; margin-top: 5px;">{{ theme.name }}</p>
+                            <input type="radio" name="theme" id="theme-{{ theme.id }}" value="{{ theme.id }}"
+                                style="display: none;">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="formbold-form-group mt-3">
+                    <label for="text_file" class="formbold-form-label">Загрузите текстовый файл с отчетом:</label>
+                    <div class="file-upload-wrapper" id="file-upload-wrapper"
+                        onclick="document.getElementById('text_file').click();">
+                        <input type="file" name="text_file" id="text_file" accept=".txt" class="file-upload-input"
+                            onchange="handleFileSelect(this)">
+                        <div class="file-upload-text">Перетащите файл сюда или нажмите для выбора</div>
+                        <div class="file-name" id="file-name"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="formbold-btn">Создать</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function selectTheme(themeId) {
+            document.querySelectorAll('.theme-image').forEach(img => img.classList.remove('selected'));
+            const selectedImage = document.querySelector(`img[onclick="selectTheme(${themeId})"]`);
+            if (selectedImage) {
+                selectedImage.classList.add('selected');
+            }
+            document.getElementById(`theme-${themeId}`).checked = true;
+        }
+
+        function handleFileSelect(input) {
+            const wrapper = document.getElementById('file-upload-wrapper');
+            const fileName = document.getElementById('file-name');
+            if (input.files && input.files[0]) {
+                wrapper.classList.add('file-selected');
+                fileName.textContent = input.files[0].name;
+                fileName.style.display = 'block';
+            } else {
+                wrapper.classList.remove('file-selected');
+                fileName.style.display = 'none';
+            }
+        }
+
+        $(document).ready(function () {
+            $('#presentation-form').on('submit', function () {
+                $.blockUI({
+                    message: '<div class="spinner-border text-white" role="status"><span class="visually-hidden">Загрузка...</span></div>',
+                    css: {
+                        border: 'none',
+                        backgroundColor: 'transparent',
+                        color: '#fff'
+                    }
+                });
+            });
+        });
+    </script>
 </body>
+
 </html>

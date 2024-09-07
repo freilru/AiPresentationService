@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Slide, Presentation
+from .models import Slide, Presentation, Theme
 from .forms import PresentationForm
 import json
 import os
 from django.conf import settings
 from main.functions.image import *
 from main.functions.re_generate_text import re_generate
+from main.functions.create_presentation import generate_summary
 
 def index(request):
     presentation = Presentation.objects.first()  # Получаем первую презентацию
@@ -19,8 +20,9 @@ def edit(request, presentation_id):
     presentation = Presentation.objects.get(id=presentation_id)
     slides = Slide.objects.all().order_by('index')
     instance = json.loads(presentation.slides)
+    comments = json.loads(presentation.comments) if presentation.comments else []
 
-    return render(request, 'index.html', {'presentation': presentation, 'slides': slides, 'instance': instance})
+    return render(request, 'index.html', {'presentation': presentation, 'slides': slides, 'instance': instance, 'comments': comments})
 
 def create(request):
     if request.method == 'POST':
@@ -28,12 +30,30 @@ def create(request):
         if form.is_valid():
             presentation = form.save(commit=False)
             presentation.user = request.user
-            presentation.slides = '''[{\"template\":\"bentoGrid\",\"content\":{\"1\":\"Самый технологичнй ЖК во всей Москве\",\"2\":\"Зарядки для элоектромобилей\",\"3\":\"Система Умный Дом\",\"4\":\"Оборудованная территория\",\"5\":\"ИИ Консьерж\",\"img-0\":\"http://127.0.0.1:8000/media/uploads/fote.png\",\"img-1\":\"https://cropas.by/wp-content/uploads/2023/02/yandex1.png\",\"img-2\":\"https://via.placeholder.com/150\",\"img-3\":\"http://127.0.0.1:8000/media/uploads/slide2.png\",\"img-4\":\"http://127.0.0.1:8000/media/uploads/slide6.png\"}},{\"template\":\"titleSlide\",\"content\":{\"1\":\"Pffe\"}}]"'''
+            
+            # Получаем текстовый файл и переводим его в строку
+            text_file = request.FILES.get('text_file')
+            if text_file:
+                text_content = text_file.read().decode('utf-8')
+            
+            # Получаем выбранную тему
+            selected_theme = request.POST.get('theme')
+            theme = Theme.objects.get(id=selected_theme)
+            presentation.slides = generate_summary(theme.slides_json, text_content)
             presentation.save()
             return redirect('edit', presentation_id=presentation.id)
     else:
         form = PresentationForm()
-    return render(request, 'create.html', {'form': form})
+    
+    # Получаем все шаблоны и слайды для отображения в форме
+    themes = Theme.objects.all()
+    slides = Slide.objects.all()
+    
+    return render(request, 'create.html', {
+        'form': form,
+        'themes': themes,
+        'slides': slides
+    })
 
 @csrf_exempt
 def save_presentation(request, presentation_id):
@@ -80,3 +100,41 @@ def re_generate_text(request):
         re_generated_text = re_generate(text_prompt, text)
         return JsonResponse({'status': 'success', 'text': re_generated_text})
     return JsonResponse({'status': 'error'}, status=400)
+
+@csrf_exempt
+def add_comment(request, presentation_id):
+    if request.method == 'POST':
+        presentation = Presentation.objects.get(id=presentation_id)
+        comment_text = request.POST.get('comment')
+        comments = json.loads(presentation.comments) if presentation.comments else []
+        comment = {
+            'id': len(comments) + 1,
+            'text': comment_text
+        }
+        comments.append(comment)
+        presentation.comments = json.dumps(comments)
+        presentation.save()
+        return JsonResponse({'status': 'success', 'comment': comment})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@csrf_exempt
+def delete_comment(request, presentation_id):
+    if request.method == 'POST':
+        presentation = Presentation.objects.get(id=presentation_id)
+        comment_id = int(request.POST.get('comment_id'))
+        comments = json.loads(presentation.comments) if presentation.comments else []
+        comments = [comment for comment in comments if comment['id'] != comment_id]
+        presentation.comments = json.dumps(comments)
+        presentation.save()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@csrf_exempt
+def fix_comment(request, presentation_id):
+    if request.method == 'POST':
+        presentation = Presentation.objects.get(id=presentation_id)
+        comment_text = request.POST.get('comment_text')
+        print(presentation.slides, comment_text)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
+
