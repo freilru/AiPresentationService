@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор презентаций</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link href="
+    https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.min.css
+    " rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .panel-left {
+            position: absolute;
+            top: 2%;
+            left: 1%;
+            width: 20%;
+            height: 96%;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow-y: auto;
+            padding: 10px;
+            z-index: 2;
+        }
+
+        .panel-right {
+            position: absolute;
+            top: 2%;
+            right: 1%;
+            width: 20%;
+            height: 96%;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .panel-template {
+            position: absolute;
+            top: 2%;
+            left: 22%;
+            width: 25%;
+            height: 50%;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            z-index: 2;
+            display: none;
+        }
+
+        .panel-down {
+            position: absolute;
+            bottom: 2%;
+            left: 50%;
+            width: 350px;
+            height: 50px;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 10px;
+            /* Добавлен внутренний отступ */
+        }
+
+        .main-slide {
+            width: 100%;
+            padding-top: 56.25%;
+            background-color: #FFFFFF;
+            color: #333333;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            position: relative;
+            text-align: center;
+            font-size: 24px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .main-slide-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+
+        .preview-slide {
+            width: 100%;
+            padding-top: 56.25%;
+            background-color: #E0E0E0;
+            color: #333333;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .preview-slide-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .preview-slide:hover {
+            background-color: #D0D0D0;
+        }
+
+        .selected-preview-slide {
+            border: 2px solid #0077ff;
+            background-color: #C0C0C0;
+        }
+
+        .template-selection {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background-color: #F5F5F5;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 80%;
+        }
+
+        #myPanzoom {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .dots-background {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background-color: #F0F0F0;
+            --dot-bg: #F5F5F5;
+            --dot-color: #505050;
+            --dot-size: 1px;
+            --dot-space: 22px;
+            background:
+                linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+                linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+                var(--dot-color);
+        }
+
+        .main-slide-container {
+            height: 54vh;
+            aspect-ratio: 16 / 9;
+            background-color: #FFFFFF;
+            color: #333333;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            position: relative;
+        }
+
+        .main-slide-content-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        body {
+            background-color: #F5F5F5;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .editable-container {
+            position: relative;
+        }
+
+        .capitalize-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            background-color: #0077ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            color: white;
+        }
+    </style>
+
+    <style>
+        .dock-item {
+            text-align: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .dock-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .dock-button:hover {
+            transform: scale(1.1) translateY(-5px);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/panzoom/panzoom.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://malsup.github.io/jquery.blockUI.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/panzoom/panzoom.css" />
+
+</head>
+
+<body>
+    <div class="panel-left">
+        <div class="row">
+            <div class="col-12">
+                <button class="btn mb-2" onclick="openGooglePresentation()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24" height="24">
+                        <path
+                            d="M8 4C8 5.10457 7.10457 6 6 6 4.89543 6 4 5.10457 4 4 4 2.89543 4.89543 2 6 2 7.10457 2 8 2.89543 8 4ZM5 16V22H3V10C3 8.34315 4.34315 7 6 7 6.82059 7 7.56423 7.32946 8.10585 7.86333L10.4803 10.1057 12.7931 7.79289 14.2073 9.20711 10.5201 12.8943 9 11.4587V22H7V16H5ZM6 9C5.44772 9 5 9.44772 5 10V14H7V10C7 9.44772 6.55228 9 6 9ZM19 5H10V3H20C20.5523 3 21 3.44772 21 4V15C21 15.5523 20.5523 16 20 16H16.5758L19.3993 22H17.1889L14.3654 16H10V14H19V5Z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <p class="ms-2">Презентация</p>
+            </div>
+            <hr class="w-100">
+        </div>
+
+        <div class="row">
+            <div class="col-12 text-center">
+                <button class="btn btn-outline-primary mb-2 w-70 py-1 mx-auto"
+                    onclick="openTemplateSelection()">Добавить слайд</button>
+                <button class="btn btn-outline-danger mb-2 w-30 py-1 mx-auto" onclick="deleteSelectedSlide()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-trash" viewBox="0 0 16 16">
+                        <path
+                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />
+                        <path
+                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z" />
+                    </svg>
+                </button>
+            </div>
+            <hr class="w-100">
+        </div>
+        <div class="row">
+            <div id="slides-selection-container">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-right">
+        <button class="btn btn-success mb-2 w-100" onclick='addSlidesFromJSON([
+        {
+            "template": "titleSlide",
+            "content": {
+                "1": "Заголовок",
+            }
+        },
+        {
+            "template": "fourPoints",
+            "content": {
+                "1": "Пункт 1",
+                "2": "Пункт 2",
+                "3": "Пункт 3",
+                "4": "Пункт 4",
+            }
+        },
+        
+    ])'>Добавить слайд из JSON</button>
+
+        <button type="button" onclick="savePresentation()">Сохранить</button>
+
+        <div id="image-editor" class="mt-3"
+            style="width: 90%; display: none; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; text-align: center;">
+            <button onclick="document.getElementById('image-editor').style.display='none'"
+                style="position: absolute; top: 10px; right: 10px; background: none; border: none; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h5>Изображение</h5>
+            <hr class="w-100">
+
+            <input type="file" id="image-upload" accept="image/*" class="form-control mb-2">
+            <button class="btn btn-outline-success mt-2" onclick="saveImage()">С устойства</button>
+
+            <hr class="w-100">
+
+            <input type="text" id="image-url" placeholder="Введите URL изображения" class="form-control mb-2">
+            <button class="btn btn-outline-info mt-2" onclick="addImageByUrl()">Добавить по URL</button>
+
+            <hr class="w-100">
+
+            <input type="text" id="image-prompt" placeholder="Введите промпт для генерации" class="form-control mb-2">
+            <select id="image-scale" class="form-select mb-2">
+                <option value="1">1:1</option>
+                <option value="2">16:9</option>
+                <option value="3">9:16</option>
+            </select>
+            <button class="btn btn-outline-primary mt-2" onclick="generateImage()">Сгенерировать</button>
+        </div>
+
+        <div id="text-editor" class="mt-3"
+            style="width: 90%; display: none; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; text-align: center;">
+            <button onclick="document.getElementById('text-editor').style.display='none'"
+                style="position: absolute; top: 10px; right: 10px; background: none; border: none; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h5>Текст</h5>
+            <hr class="w-100">
+
+            <textarea id="text-prompt" placeholder="Введите промпт для изменения текста" class="form-control mb-2"
+                rows="4"></textarea>
+            <button class="btn btn-outline-primary mt-2" onclick="reGenerateTextByPrompt()">Изменить</button>
+        </div>
+    </div>
+
+    <div id="template-panel" class="panel-template">
+        <button class="btn mb-2 mt-1 ms-1" onclick="document.getElementById('template-panel').style.display='none'"
+            style="width: 30px; height: 30px; padding: 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                <path
+                    d="M10.5859 12L2.79297 4.20706L4.20718 2.79285L12.0001 10.5857L19.793 2.79285L21.2072 4.20706L13.4143 12L21.2072 19.7928L19.793 21.2071L12.0001 13.4142L4.20718 21.2071L2.79297 19.7928L10.5859 12Z">
+                </path>
+            </svg>
+        </button>
+
+        <div class="template-selection" style="overflow-y: auto;">
+            {% for slide in slides %}
+            <div class="rounded-rectangle mb-2" onclick="selectTemplate('{{ slide.name }}')"
+                style="cursor: pointer; border-radius: 10px; overflow: hidden; width: 100%; padding-top: 56.25%; position: relative;">
+                <img src="{{ slide.image_title.url|default:'' }}" alt="{{ slide.name_display }}"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                <div class="slide-name"
+                    style="position: absolute; bottom: 0; left: 0; right: 0; padding: 5px; text-align: center; background-color: rgba(255, 255, 255, 0.7);">
+                    {{ slide.name_display }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel-down">
+
+        <div class="dock-item">
+            <button class="dock-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path
+                        d="M13.9093 12.3603L17.0007 20.8537L14.1816 21.8798L11.0902 13.3864L6.91797 16.5422L8.4087 1.63318L19.134 12.0959L13.9093 12.3603Z">
+                    </path>
+                </svg>
+            </button>
+
+        </div>
+        <div class="dock-item">
+            <button class="dock-button" type="button" onclick="">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                    <path
+                        d="M8.99988 4.99976L16.0002 12L8.99988 18.9998V12.9998L2.9999 13.0001L2.99988 11.0001L8.99988 10.9998V4.99976ZM17.9999 18.9999L18 4.99993H20L19.9999 18.9999H17.9999Z">
+                    </path>
+                </svg>
+            </button>
+
+        </div>
+        <!-- Add more items as needed -->
+
+    </div>
+
+    <div id="myPanzoom" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <div class="dots-background"
+            style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+            <div id="main-slide" class="main-slide-container">
+                <div class="main-slide-content-container" id="main-slide-content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        let selectedTemplate = '';
+        let slideCount = 0;
+        let selectedSlide = null;
+
+        const container = document.getElementById("myPanzoom");
+        const options = {
+            minScale: 0.7,
+            maxScale: 3,
+            panOnlyZoomed: false,
+            click: true,
+            wheel: true,
+            pinchToZoom: true
+        };
+
+        const instance = new Panzoom(container, options);
+
+        container.addEventListener('wheel', (event) => {
+            instance.zoomWithWheel(event);
+        });
+
+        const templates = {};
+        {% for slide in slides %}
+        templates['{{ slide.name }}'] = {
+            template: '{{ slide.name }}',
+            theme: '{{ slide.theme.name }}',
+            html: `{{ slide.html|safe|default:'' }}`,
+            image_title: `{% if slide.image_title %}{{ slide.image_title.url|default:'' }}{% else %}''{% endif %}`,
+            image_background: `{% if slide.image_background %}{{ slide.image_background.url|default:'' }}{% else %}''{% endif %}`
+        };
+        {% endfor %}
+
+        function openTemplateSelection() {
+            document.getElementById('template-panel').style.display = 'block';
+        }
+
+        function selectTemplate(index) {
+            selectedTemplate = templates[index];
+            console.log(selectedTemplate);
+            addSlide();
+            document.getElementById('template-panel').style.display = 'none';
+        }
+
+
+        function addSlide() {
+            slideCount++;
+            const mainSlide = document.createElement('div');
+            mainSlide.className = 'main-slide';
+            mainSlide.setAttribute('data-slide-number', slideCount);
+            mainSlide.setAttribute('data-template', selectedTemplate.template);
+            const mainSlideContent = document.createElement('div');
+            mainSlideContent.className = 'main-slide-content';
+            mainSlideContent.innerHTML = selectedTemplate.html;
+
+            // Установка фонового изображения
+            const backgroundImage = mainSlideContent.querySelector('#image_background');
+            if (backgroundImage) {
+                backgroundImage.src = selectedTemplate.image_background || '';
+            }
+
+            mainSlide.appendChild(mainSlideContent);
+
+            const previewSlide = document.createElement('div');
+            previewSlide.className = 'preview-slide';
+            previewSlide.setAttribute('data-slide-number', slideCount);
+
+            const previewSlideContent = document.createElement('div');
+            previewSlideContent.className = 'preview-slide-content';
+            previewSlideContent.innerHTML = `<img src="${selectedTemplate.image_title || ''}" alt="Превью слайда ${slideCount}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            previewSlide.appendChild(previewSlideContent);
+
+            previewSlide.onclick = function () {
+                selectSlide(previewSlide);
+            };
+
+            document.getElementById('slides-selection-container').appendChild(previewSlide);
+            document.getElementById('main-slide-content').appendChild(mainSlide);
+            
+            savePresentation();
+            selectSlide(previewSlide);
+            
+        }
+
+        function deleteSelectedSlide() {
+            if (selectedSlide && slideCount > 1) {
+                const slideNumber = selectedSlide.getAttribute('data-slide-number');
+                const mainSlide = document.querySelector(`#main-slide-content .main-slide[data-slide-number="${slideNumber}"]`);
+                const previewSlide = document.querySelector(`#slides-selection-container .preview-slide[data-slide-number="${slideNumber}"]`);
+
+                if (mainSlide) mainSlide.remove();
+                if (previewSlide) previewSlide.remove();
+
+                selectedSlide = null;
+
+                const remainingSlides = document.querySelectorAll('#slides-selection-container .preview-slide');
+                if (remainingSlides.length > 0) {
+                    selectSlide(remainingSlides[0]);
+                }
+                savePresentation();
+            }
+        }
+
+        function selectSlide(previewSlide) {
+            const previewSlides = document.querySelectorAll('.preview-slide');
+            previewSlides.forEach(s => s.classList.remove('selected-preview-slide'));
+
+            previewSlide.classList.add('selected-preview-slide');
+
+            const mainSlides = document.querySelectorAll('#main-slide-content .main-slide');
+            mainSlides.forEach(s => s.style.display = 'none');
+
+            const slideNumber = previewSlide.getAttribute('data-slide-number');
+            const mainSlide = document.querySelector(`#main-slide-content .main-slide[data-slide-number="${slideNumber}"]`);
+            if (mainSlide) {
+                mainSlide.style.display = 'block';
+            }
+
+            selectedSlide = previewSlide;
+
+            document.getElementById('main-slide').style.display = 'block';
+        }
+
+
+
+        window.onload = function () {
+            {% for slide in instance %}
+            addSlidesFromJSON({
+                template: "{{ slide.template }}",
+                content: {
+                    {% for key, value in slide.content.items %}
+        "{{ key }}": "{{ value }}",
+            {% endfor %}
+                }
+            });
+        {% endfor %}
+        };
+
+        function addSlidesFromJSON(jsonData) {
+            const slides = Array.isArray(jsonData) ? jsonData : [jsonData];
+
+            slides.forEach(slide => {
+                const template = templates[slide.template];
+                if (!template) {
+                    console.error('Шаблон не найден для слайда:', slide.template);
+                    return;
+                }
+
+                let slideContent = template.html;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(slideContent, 'text/html');
+
+                for (const [id, content] of Object.entries(slide.content)) {
+                    const element = doc.querySelector(`[data-id="${id}"]`);
+                    if (element) {
+                        if (id.startsWith('img-')) {
+                            element.src = content;
+                        } else {
+                            element.textContent = content;
+                        }
+                    }
+                }
+
+                selectedTemplate = { html: doc.body.innerHTML, image_title: template.image_title, image_background: template.image_background, template: template.template };
+                addSlide();
+            });
+        }
+
+    </script>
+
+    <script>
+        function openTextEditor(text) {
+            currentTextElement = text;
+            document.getElementById('text-editor').style.display = 'block';
+        }
+
+       function reGenerateTextByPrompt() {
+            const textPrompt = document.getElementById('text-prompt').value;
+            const formData = new FormData();
+            formData.append('text_prompt', textPrompt);
+            formData.append('text', currentTextElement.textContent);
+            
+            $.blockUI({
+                message: '<div class="spinner-border text-white" role="status"><span class="visually-hidden">Загрузка...</span></div>',
+                css: {
+                    border: 'none',
+                    backgroundColor: 'transparent'
+                }
+            });
+
+            fetch('{% url 're_generate_text' %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    currentTextElement.textContent = data.text;
+                } else {
+                    alert('Ошибка при генерации текста.');
+                }
+            })
+            .finally(() => {
+                $.unblockUI();
+                savePresentation();
+            });
+        }
+    </script>
+
+    <script> 
+
+        function openTextEditor(text) {
+            currentTextElement = text;
+            document.getElementById('text-editor').style.display = 'block';
+        }
+
+        function openImageEditor(img) {
+            currentImageElement = img;
+            document.getElementById('image-editor').style.display = 'block';
+        }
+
+
+        function generateImage() {
+            const imagePrompt = document.getElementById('image-prompt').value;
+            const formData = new FormData();
+            formData.append('image_prompt', imagePrompt);
+            formData.append('image_scale', document.getElementById('image-scale').value);
+            $.blockUI({
+                message: '<div class="spinner-border text-white" role="status"><span class="visually-hidden">Загрузка...</span></div>',
+                css: {
+                    border: 'none',
+                    backgroundColor: 'transparent',
+                    color: '#fff'
+                }
+            });
+
+            fetch('{% url 'generate_image' %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        if (currentImageElement) {
+                            currentImageElement.src = data.url;
+                        }
+                        savePresentation();
+                    } else {
+                        alert('Ошибка при генерации изображения.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при генерации изображения.');
+                }).finally(function () {
+                    $.unblockUI();
+                    savePresentation();
+                });
+
+        }
+
+        function saveImage() {
+            const fileInput = document.getElementById('image-upload');
+            const file = fileInput.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                fetch('/upload_image/', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            if (currentImageElement) {
+                                currentImageElement.src = data.url;
+                            }
+                            savePresentation();
+                        } else {
+                            alert('Ошибка при загрузке изображения.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        alert('Ошибка при загрузке изображения.');
+                    }).finally(function () {
+                        
+                        savePresentation();
+                    });
+            }
+
+        }
+
+        function addImageByUrl() {
+            const urlInput = document.getElementById('image-url');
+            const url = urlInput.value;
+            if (url) {
+                if (currentImageElement) {
+                    currentImageElement.src = url;
+                }
+            }
+            savePresentation();
+        }
+
+
+    </script>
+
+    <!-- save presentation -->
+    <script>
+        function savePresentation() {
+            const slidesJson = slidesToJson();
+            const presentationId = {{ presentation.id }}
+
+        const csrfToken = '{{ csrf_token }}';
+
+        const form = new FormData();
+        form.append('slides', slidesJson);
+
+        fetch(`/save/${presentationId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: form
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+
+                } else {
+                    alert('Ошибка при сохранении презентации.');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка при сохранении презентации.');
+            });
+        }
+    </script>
+
+    <script>
+                function templatesToJson(templates) {
+            const parser = new DOMParser();
+            const result = [];
+
+            // Проходим по ключам объекта templates
+            Object.keys(templates).forEach(templateName => {
+                const template = templates[templateName];
+                const doc = parser.parseFromString(template.html, 'text/html');
+                const elements = doc.querySelectorAll('[data-id][data-name]');
+                const fields = {};
+
+                elements.forEach(el => {
+                    const id = el.getAttribute('data-id');
+                    const name = el.getAttribute('data-name');
+                    fields[id] = name;
+                });
+
+                result.push({
+                    name: templateName,
+                    fields: fields
+                });
+            });
+
+            return result;
+        }
+
+        function slidesToJson() {
+            const result = [];
+            const slideContainer = document.getElementById('main-slide-content');
+            const slides = slideContainer.querySelectorAll('.main-slide');
+
+            slides.forEach(slide => {
+                const content = {};
+                const elements = slide.querySelectorAll('[data-id]');
+
+                elements.forEach(el => {
+                    const id = el.getAttribute('data-id');
+                    if (id.startsWith('img-')) {
+                        content[id] = el.src;
+                    } else {
+                        content[id] = el.textContent.replace(/\n/g, ' ').trim();
+                    }
+                });
+
+                result.push({
+                    template: slide.getAttribute('data-template'),
+                    content: content
+                });
+            });
+
+            console.log(JSON.stringify(result).replace(/"/g, '\\"').replace(/\n/g, ''));
+
+            return JSON.stringify(result).replace(/"/g, '\\"').replace(/\n/g, '');
+        }
+
+
+        const templatesJson = templatesToJson(templates);
+        console.log(templatesJson);
+
+       
+    </script>
+</body>
+
+</html>
