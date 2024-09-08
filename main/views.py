@@ -48,6 +48,7 @@ def create(request):
             presentation_json = send_to_gen_pres(text_content, theme.slides_json)
             presentation.slides = presentation_json
             presentation.save()
+            print(presentation_json)
 
             # Парсим JSON
             slides_data = json.loads(presentation_json)
@@ -60,6 +61,9 @@ def create(request):
                         image_url = gen(value)
                         # Обновляем значение в JSON
                         slide['content'][key] = image_url
+
+                        presentation.slides = json.dumps(slides_data).replace('\n', '').replace('"', '\"').replace("```", '').replace('fields', 'content')
+                        presentation.save()
 
             # Сохраняем обновленный JSON
             presentation.slides = json.dumps(slides_data).replace('\n', '').replace('"', '\"').replace("```", '').replace('fields', 'content')
@@ -168,6 +172,6 @@ def fix_comment(request, presentation_id):
         presentation = Presentation.objects.get(id=presentation_id)
         comment_text = request.POST.get('comment_text')
         presentation.slides = send_to_proceed_comm(presentation.slides, comment_text)
-        print(presentation.slides, comment_text)
+        presentation.save()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
