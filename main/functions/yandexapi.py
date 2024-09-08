@@ -32,8 +32,10 @@ def send_to_change_text(text, prompt):
         response = requests.post(url, json=payload)
         response.raise_for_status()
         json_response = response.json()
+        print(json.loads(json_response['response'])['text'])
         return json.loads(json_response['response'])['text']
     except requests.exceptions.RequestException as e:
+        print(str(e))
         return {"error": str(e)}
 
 
